@@ -1,0 +1,33 @@
+{
+	"name": "find-the-best-pick",
+	"version": "1.0.0",
+	"description": "Shopping website",
+	"main": "server.js",
+	"scripts": {
+		"start": "node server.js",
+		"start:dev": "nodemon server.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/A-Spiral-Forge/find-the-best-pick.git"
+	},
+	"author": "SpiralForge",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/A-Spiral-Forge/find-the-best-pick/issues"
+	},
+	"homepage": "https://github.com/A-Spiral-Forge/find-the-best-pick#readme",
+	"dependencies": {
+		"bcryptjs": "^2.4.3",
+		"cookie-parser": "^1.4.6",
+		"dotenv": "^16.0.2",
+		"express": "^4.18.1",
+		"jsonwebtoken": "^8.5.1",
+		"mysql2": "^2.3.3",
+		"sequelize": "^6.23.1",
+		"validator": "^13.7.0"
+	},
+	"devDependencies": {
+		"nodemon": "^2.0.20"
+	}
+}
