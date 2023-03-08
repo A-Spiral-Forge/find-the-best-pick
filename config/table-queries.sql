@@ -31,7 +31,7 @@ CREATE TABLE Seller (
 	email VARCHAR(255),
 	fullName VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
-    addressStreet VARCHAR(255),
+    fullAddress VARCHAR(255),
     addressCity VARCHAR(255),
     addressState VARCHAR(255),
     addressCountry VARCHAR(255),

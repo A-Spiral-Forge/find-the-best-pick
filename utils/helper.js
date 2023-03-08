@@ -25,3 +25,17 @@ exports.sendResponse = (res, data, code = 200) => {
 	res.statusCode = code;
 	return res.send(send_data);
 };
+
+/**
+ * Filter the object so that only allowed fields are modified in database
+ * @param {*} obj Object to be filtered
+ * @param  {...String} allowedFields Fields allowed to be modified
+ * @returns {*} Filtered object with allowed fields
+ */
+exports.filterObj = (obj, ...allowedFields) => {
+	const filteredObj = {};
+	Object.keys(obj).forEach((el) => {
+		if (allowedFields.includes(el)) filteredObj[el] = obj[el];
+	});
+	return filteredObj;
+};
