@@ -1,5 +1,10 @@
 const AppError = require('./../utils/appError');
 
+/**
+ * Meaningful message for duplicate fields in database
+ * @param {*} error Error object
+ * @returns Error with meaningful message
+ */
 const handleDuplicateFieldsDB = (error) => {
 	const fieldValue = error.keyValue.name;
 	const message = `Tour with name: '${fieldValue}' already exists, please choose another!`;
@@ -7,12 +12,22 @@ const handleDuplicateFieldsDB = (error) => {
 	return new AppError(message, 400);
 };
 
+/**
+ * Meaningful message for parsing query parameters from request
+ * @param {*} error Error object
+ * @returns Error with meaningful message
+ */
 const handleParsingError = (error) => {
 	const message = `The query parameters given by you is invalid, please check and try again.`;
 
 	return new AppError(message, 400);
 };
 
+/**
+ * Meaningful message for invalid field values in data
+ * @param {*} error Error object
+ * @returns Error with meaningful message
+ */
 const handleValidationErrorDB = (error) => {
 	const errors = Object.values(error.errors).map((el) => el.message);
 	const message = `Input correct field values! ${errors.join('. ')}`;
@@ -20,9 +35,26 @@ const handleValidationErrorDB = (error) => {
 	return new AppError(message, 400);
 };
 
+/**
+ * Meaningful message for invalid JWT session token
+ * @returns Error with meaningful message
+ */
 const handleJWTError = () =>
 	new AppError('Invalid token. Please login again!', 401);
 
+/**
+ * Meaningful message for expired JWT session token
+ * @returns Error with meaningful message
+ */
+const handleJWTExpiredError = () =>
+	new AppError('Token expired. Please login again to continue!', 401);
+
+/**
+ * Send error messages in development environment
+ * @param {*} err Error obejct
+ * @param {*} req Request object
+ * @param {*} res Response object
+ */
 const sendErrorDev = (err, req, res) => {
 	if (req.originalUrl.startsWith('/api')) {
 		res.status(err.statusCode).json({
@@ -37,9 +69,12 @@ const sendErrorDev = (err, req, res) => {
 	}
 };
 
-const handleJWTExpiredError = () =>
-	new AppError('Token expired. Please login again to continue!', 401);
-
+/**
+ * Send error messages in production environment
+ * @param {*} err Error obejct
+ * @param {*} req Request object
+ * @param {*} res Response object
+ */
 const sendErrorProd = (err, req, res) => {
 	if (err.isOperational) {
 		res.status(err.statusCode).json({
@@ -58,6 +93,13 @@ const sendErrorProd = (err, req, res) => {
 	}
 };
 
+/**
+ * Handle error message and objects from the error generated inside the application
+ * @param {*} err Error object
+ * @param {*} req Request bbject
+ * @param {*} res Response object
+ * @param {*} next Next Middleware
+ */
 module.exports = (err, req, res, next) => {
 	err.statusCode = err.statusCode || 500;
 	err.status = err.status || 'error';

@@ -1,4 +1,12 @@
+/**
+ * Creating errors inside application
+ */
 class AppError extends Error {
+	/**
+	 * 
+	 * @param {String} message Error message
+	 * @param {Number} statusCode Error code
+	 */
 	constructor(message, statusCode) {
 		super(message);
 		this.statusCode = statusCode;

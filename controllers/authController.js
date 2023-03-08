@@ -1,32 +1,49 @@
+// Module Import
 const crypto = require('crypto');
 const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const dbConfig = require('../config/db.config');
+
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const User = require('../models/userModel');
 
+/**
+ * 
+ * @param {String} id ID of user 
+ * @returns {String} JSON Web Token for the session
+ */
 const signToken = (id) =>
 	jwt.sign({ _id: id }, process.env.JWT_SECRET_KEY, {
 		expiresIn: process.env.JWT_EXPIRES_IN * 24 * 60 * 60 * 1000,
 	});
 
+/**
+ * 
+ * @param {*} user User 
+ * @param {Number} statusCode Status code
+ * @param {*} res Response obejct
+ */
 const generateAndSendToken = (user, statusCode, res) => {
+	// Generate JWT for session
 	const token = signToken(user.email);
 
+	// Set cookie for session
 	const cookieOptions = {
 		expires: new Date(
 			Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
 		),
-		httpOnly: true,
+		httpOnly: true, // Cannot changed from browser
 	};
 
 	if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
 
 	res.cookie('jwt', token, cookieOptions);
 
+	// Remove password from response
 	user.password = undefined;
+
+	// Send response
 	res.status(statusCode).json({
 		status: 'success',
 		ok: true,
@@ -37,17 +54,30 @@ const generateAndSendToken = (user, statusCode, res) => {
 	});
 };
 
+/**
+ * Sign Up function for users signing to application.
+ */
 exports.signup = catchAsync(async (req, res, next) => {
 	const fields = Object.keys(User.rawAttributes);
 	const entry = {};
 
-	fields.forEach((el) => (entry[el] = req.body[el]));
+	// Filter req object by fields present in schema
+	fields.forEach((el) => {
+		if(el == 'role') {
+			return;
+		}
 
+		entry[el] = req.body[el]
+	});
+
+	// Create user and send session token
 	const user = await User.create(entry);
-
 	generateAndSendToken(user, 201, res);
 });
 
+/**
+ * Log In function for users to log in
+ */
 exports.login = catchAsync(async (req, res, next) => {
 	const { email, password } = req.body;
 
@@ -73,21 +103,32 @@ exports.login = catchAsync(async (req, res, next) => {
 	if (!bcrypt.compareSync(password, user.password))
 		return next(new AppError('Incorrect password. Please try again.', 400));
 
+	// Send session token, if all validations passed
 	generateAndSendToken(user, 201, res);
 });
 
+/**
+ * Logging out user from application
+ */
 exports.logout = catchAsync(async (req, res, next) => {
+	// Set cookie to any invalid string value to log out
 	res.cookie('jwt', 'loggedout', {
 		expires: new Date(Date.now() + 10 * 1000),
 		httpOnly: true,
 	});
 
+	// Send response with cookie
 	res.status(200).json({ status: 'success', ok: true });
 });
 
+/**
+ * Middleware to restrict the access of routes without login to the application
+ * @returns Error if user is not valid or not logged in, else next middleware
+ */
 exports.protect = catchAsync(async (req, res, next) => {
 	let token;
 
+	// Get token from header or cookie
 	if (
 		req.headers.authorization &&
 		req.headers.authorization.startsWith('Bearer ')
@@ -106,14 +147,11 @@ exports.protect = catchAsync(async (req, res, next) => {
 		);
 	}
 
-	// console.log(token, process.env.JWT_SECRET_KEY);
-
+	// Decode JWT to extract ID from it
 	const decoded = await promisify(jwt.verify)(
 		token,
 		process.env.JWT_SECRET_KEY
 	);
-
-	// console.log(decoded);
 
 	const currentUser = await User.findByPk(decoded._id);
 
@@ -129,13 +167,20 @@ exports.protect = catchAsync(async (req, res, next) => {
 		);
 	}
 
+	// Set user to request, if user is valid
 	req.user = currentUser;
 
 	next();
 });
 
+/**
+ * Middleware to restrict unauthorised users to access the routes
+ * @param  {...String} roles List of roles who can access the route
+ * @returns Error if user doesn't have permission, else move to next middleware
+ */
 exports.restrictTo = (...roles) => {
 	return (req, res, next) => {
+		// Check if user role is present in allowed roles
 		if (!roles.includes(req.user.role)) {
 			return next(
 				new AppError(

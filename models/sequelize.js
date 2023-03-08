@@ -2,6 +2,7 @@
 
 const { Sequelize } = require('sequelize');
 
+// Creating sequilize object for database
 const sequelize = new Sequelize(
 	process.env.NODE_ENV === 'development'
 		? process.env.DB_DATABASE

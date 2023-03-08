@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const AppError = require('../utils/appError');
 // const validator = require('validator');
 
-class Customer extends Model {}
+class Customer extends Model {};
 
 Customer.init(
 	{
@@ -36,12 +36,10 @@ Customer.init(
 			type: DataTypes.STRING,
 			allowNull: false,
 			validate: {
-				isAlpha: {
-					msg: 'Name must only contain letters.',
-				},
 				notEmpty: {
 					msg: 'Name cannot be empty.',
 				},
+				is: /^[a-zA-Z ]*$/,
 			},
 		},
 		password: {
@@ -146,28 +144,34 @@ Customer.init(
 	{
 		timestamps: true,
 		sequelize,
-		tableName: 'customer',
+		tableName: 'Customer',
 	}
 );
 
-// const sync = async () => {
-// 	await Customer.sync({ alter: true });
-// };
+// Sync model to database
+const sync = async () => {
+	await Customer.sync({ alter: true });
+};
 
-// sync();
+if(process.env.NODE_ENV === 'development') {
+	// sync();
+}
 
+// Adding timestamp of password changed
 Customer.beforeValidate((instance, options) => {
 	instance.passwordChangedAt = new Date(Date.now());
 });
 
+// Hashing the password to protect from data breach attacks
 Customer.beforeCreate((instance, options) => {
 	instance.password = bcrypt.hashSync(instance.password, 12);
 });
 
-// Customer.beforeFind((instance, options) => {
-// 	instance.where.active = true;
-// });
-
+/**
+ * Check whether password is changed after login or creating JWT
+ * @param {String} JWTTimestamp Timestamp from JSON Web Token
+ * @returns {Boolean} Return true if password is changed after login, false otherwise
+ */
 Customer.prototype.changedPasswordAfter = function (JWTTimestamp) {
 	if (this.passwordChangedAt) {
 		const changedTimestamp = parseInt(
