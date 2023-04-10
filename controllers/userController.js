@@ -1,5 +1,5 @@
 const handlerFactory = require('./handlerFactory');
-const User = require('../models/userModel');
+const User = require('../models/customerModel');
 const catchAsync = require('../utils/catchAsync');
 const {filterObj} = require('../utils/helper');
 

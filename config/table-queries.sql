@@ -92,7 +92,7 @@ CREATE TABLE Subcategories (
     description LONGTEXT,
     category_id INT NOT NULL,
     PRIMARY KEY(id),
-    FOREIGN KEY(category_id) REFERENCES Categories(id) ON DELETE CASCADE,
+    FOREIGN KEY(category_id) REFERENCES Categories(id) ON DELETE CASCADE
 );
 
 CREATE TABLE Product_Subcategory (

@@ -152,13 +152,13 @@ Seller.init(
 		accountNumber: {
 			type: DataTypes.STRING(20),
 		},
-		IFSC: {
+		ifsc: {
 			type: DataTypes.STRING(20),
 		},
 		accountHoldersName: {
 			type: DataTypes.STRING(50),
 		},
-		amazonBalance_in_dollars: {
+		amazonBalanceInDollars: {
 			type: DataTypes.DECIMAL(2),
 			defaultValue: 0,
 			allowNull: false,

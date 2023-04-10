@@ -2,7 +2,7 @@ const { Sequelize, DataTypes, Model } = require('sequelize');
 const sequelize = require('./sequelize');
 const Customer = require('./customerModel');
 
-class DeliveryAddress extends Model {}
+class DeliveryAddress extends Model {};
 
 DeliveryAddress.init(
 	{
@@ -11,27 +11,37 @@ DeliveryAddress.init(
 			autoIncrement: true,
 			primaryKey: true,
 		},
-		customer_email: {
+		customerEmail: {
 			type: DataTypes.STRING,
 			allowNull: false,
+		},
+		fullName: {
+			type: DataTypes.STRING,
+			allowNull: false,
+			validate: {
+				notEmpty: {
+					msg: 'Name cannot be empty.',
+				},
+				is: /^[a-zA-Z ]*$/,
+			},
 		},
 		fullAddress: {
 			type: DataTypes.STRING,
 			allowNull: false,
 		},
-		addressCity: {
+		city: {
 			type: DataTypes.STRING,
 			allowNull: false,
 		},
-		addressState: {
+		state: {
 			type: DataTypes.STRING,
 			allowNull: false,
 		},
-		addressCountry: {
+		country: {
 			type: DataTypes.STRING,
 			allowNull: false,
 		},
-		addressZipCode: {
+		zipCode: {
 			type: DataTypes.STRING(10),
 			allowNull: false,
 		},
@@ -39,6 +49,11 @@ DeliveryAddress.init(
 			type: DataTypes.STRING(15),
 			allowNull: false,
 		},
+		active: {
+			type: DataTypes.BOOLEAN,
+			defaultValue: true,
+			allowNull: false,
+		}
 	},
 	{
 		tableName: 'DeliveryAddress',
@@ -48,10 +63,11 @@ DeliveryAddress.init(
 );
 
 // Set One to Many relationship between customer and delivery address
-Customer.hasMany(DeliveryAddress);
+// Customer.hasMany(DeliveryAddress);
 DeliveryAddress.belongsTo(Customer, {
 	onDelete: 'CASCADE',
-	foreignKey: 'email',
+	foreignKey: 'customerEmail',
+	targetKey: 'email'
 });
 
 // Sync the defined model to database
