@@ -20,6 +20,8 @@ router.route('/updateMe').patch(userController.updateMe);
 // router.route('/deleteMe').delete(userController.deleteMe);
 
 // Routes for delivery address for users
+router.route('/delivery-address/all', authController.restrictTo('admin'), deliveryAddressController.getAllDeliveryAddressOfUser);
+
 router
 	.route('/delivery-address')
 	.get(deliveryAddressController.getAllDeliveryAddressOfUser)

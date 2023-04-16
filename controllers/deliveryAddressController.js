@@ -1,6 +1,12 @@
+const handlerFactory = require('./handlerFactory');
 const DeliveryAddress = require('../models/deliveryAddressModel');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
+
+/**
+ * Get all delivery addresses from database
+ */
+exports.getAllDeliveryAddresses = handlerFactory.getAll(DeliveryAddress);
 
 /**
  * Get all the delivery address of current user (only when user is logged in)
@@ -109,8 +115,6 @@ exports.deleteDeliveryAddress = catchAsync(async (req, res, next) => {
 			active: true,
 		},
 	});
-
-	console.log(doc);
 
 	// Check if any address exists
 	if (!doc) {

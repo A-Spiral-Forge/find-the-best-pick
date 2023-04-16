@@ -2,7 +2,7 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 
 const userRouter = require('./routes/userRoutes');
-const sellerRouter = require('./routes/sellerRoutes');
+const productRouter = require('./routes/productRoutes');
 const globalErrorHandler = require('./controllers/errorController');
 
 // Initialize app
@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(cookieParser());
 // Routes
 app.use('/api/v1/users', userRouter);
-app.use('/api/v1/sellers', sellerRouter);
+app.use('/api/v1/products', productRouter);
 // Adding error handler
 app.use(globalErrorHandler);
 

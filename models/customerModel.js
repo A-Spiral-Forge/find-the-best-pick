@@ -131,13 +131,33 @@ Customer.init(
 			type: DataTypes.DATE,
 		},
 		role: {
-			type: DataTypes.STRING,
+			type: DataTypes.ENUM('customer', 'seller', 'admin'),
 			allowNull: false,
 			defaultValue: 'customer',
 		},
 		active: {
 			type: DataTypes.BOOLEAN,
 			defaultValue: true,
+			allowNull: false,
+		},
+		fullAddress: {
+			type: DataTypes.STRING,
+		},
+		addressCity: {
+			type: DataTypes.STRING,
+		},
+		addressState: {
+			type: DataTypes.STRING,
+		},
+		addressCountry: {
+			type: DataTypes.STRING,
+		},
+		addressZipCode: {
+			type: DataTypes.STRING(10),
+		},
+		amazonBalanceInDollars: {
+			type: DataTypes.DECIMAL(2),
+			defaultValue: 0,
 			allowNull: false,
 		},
 	},

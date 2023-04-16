@@ -62,11 +62,21 @@ exports.signup = catchAsync(async (req, res, next) => {
 	const entry = {};
 
 	// Filter req object by fields present in schema
-	fields.forEach((el) => {
-		if(el == 'role') {
-			return;
+	if(req.body.role) {
+		req.body.role = req.body.role.toLowerCase();
+		req.body.role = req.body.role === 'admin' ? 'customer' : req.body.role;
+	}
+	
+	if(req.body.dateOfBirth) {
+		try {
+			req.body.dateOfBirth = new Date(req.body.dateOfBirth).toISOString();
+		} catch(err) {
+			console.log(err);
+			return next(new AppError('Invalid date', 400));
 		}
+	}
 
+	fields.forEach((el) => {
 		entry[el] = req.body[el]
 	});
 
