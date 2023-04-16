@@ -2,6 +2,7 @@ const { Sequelize, Op, DataTypes, Model } = require('sequelize');
 const sequelize = require('./sequelize');
 const AppError = require('../utils/appError');
 const Customer = require('../models/customerModel');
+const ProductSpecifications = require('./productSpecificationModel');
 
 class Product extends Model {};
 
@@ -44,7 +45,7 @@ Product.init(
         video: {
             type: DataTypes.STRING,
         },
-        avaialble: {
+        available: {
             type: DataTypes.INTEGER,
             allowNull: false,
             defaultValue: 0,
@@ -68,7 +69,7 @@ Product.init(
                 }
             }
         },
-        priceInRuppes: {
+        priceInRupee: {
             type: DataTypes.DECIMAL(10, 2),
             allowNull: false,
             validate: {
@@ -103,19 +104,15 @@ Product.init(
     }
 );
 
-Product.belongsTo(Customer, {
-    onDelete: 'CASCADE',
-    foreignKey: 'sellerEmail',
-    targetKey: 'email',
+Product.hasMany(ProductSpecifications, {
+    foreignKey: 'productId',
+    as: 'specifications',
 });
 
 // Sync the defined model to database
 const sync = async () => {
 	await Product.sync({ alter: true });
 };
-
-if(process.env.NODE_ENV === 'development') {
-	sync();
-}
+// sync();
 
 module.exports = Product;

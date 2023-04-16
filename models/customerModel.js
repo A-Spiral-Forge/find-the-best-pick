@@ -172,10 +172,7 @@ Customer.init(
 const sync = async () => {
 	await Customer.sync({ alter: true });
 };
-
-if(process.env.NODE_ENV === 'development') {
-	// sync();
-}
+// sync();
 
 // Adding timestamp of password changed
 Customer.beforeValidate((instance, options) => {

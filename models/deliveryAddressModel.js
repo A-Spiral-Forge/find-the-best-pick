@@ -74,9 +74,6 @@ DeliveryAddress.belongsTo(Customer, {
 const sync = async () => {
 	await DeliveryAddress.sync({ alter: true });
 };
-
-if(process.env.NODE_ENV === 'development') {
-	// sync();
-}
+// sync();
 
 module.exports = DeliveryAddress;

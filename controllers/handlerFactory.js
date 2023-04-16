@@ -8,7 +8,7 @@ const User = require('../models/customerModel');
  * @param {*} options Options for querying
  * @returns
  */
-exports.getAll = (Model, options) =>
+exports.getAll = (Model, options = {}) =>
 	catchAsync(async (req, res, next) => {
 		// Write sorting query
 		const sortingQuery = req.query.sort
@@ -17,12 +17,16 @@ exports.getAll = (Model, options) =>
 
 		// Fetch data from the dataset with given conditions
 		const data = await Model.findAll({
-			attributes: { exclude: options.exclude },
+			attributes: {
+				exclude: options.exclude,
+				include: options.includeAttributes,
+			},
+			include: options.include,
 			order: sortingQuery ? sortingQuery : [Model.primaryKeyAttributes],
 			limit: req.query.limit ? req.query.limit : 10,
 		});
 
-		// Return data in the response 
+		// Return data in the response
 		return res.status(200).json({
 			status: 'success',
 			ok: true,
@@ -35,16 +39,20 @@ exports.getAll = (Model, options) =>
  * Get One document by primary key
  * @param {*} Model Modal for querying
  * @param {*} options options for querying
- * @returns 
+ * @returns
  */
-exports.getOne = (Model, options) =>
+exports.getOne = (Model, options = {}) =>
 	catchAsync(async (req, res, next) => {
 		// Get primary key
 		const pk = req.params.id;
 
 		// Find by primary key
 		const doc = await Model.findByPk(pk, {
-			attributes: { exclude: options.exclude },
+			attributes: {
+				exclude: options.exclude,
+				include: options.includeAttributes,
+			},
+			include: options.include,
 		});
 
 		// Return the document in response
@@ -57,8 +65,8 @@ exports.getOne = (Model, options) =>
 
 /**
  * Creating the document in the modal
- * @param {*} Model Modal for querying 
- * @returns 
+ * @param {*} Model Modal for querying
+ * @returns
  */
 exports.createEntries = (Model) =>
 	catchAsync(async (req, res, next) => {
@@ -107,7 +115,7 @@ exports.createEntries = (Model) =>
 /**
  * Update the document in modal using primary key
  * @param {*} Model Modal for querying
- * @returns 
+ * @returns
  */
 exports.updateOne = (Model) =>
 	catchAsync(async (req, res, next) => {
@@ -136,7 +144,7 @@ exports.updateOne = (Model) =>
 /**
  * Delete the document in modal using primary key
  * @param {*} Model Modal for querying
- * @returns 
+ * @returns
  */
 exports.deleteOne = (Model) =>
 	catchAsync(async (req, res, next) => {
